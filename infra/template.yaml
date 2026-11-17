@@ -1,0 +1,94 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Calculator microservices - one Lambda per arithmetic operation
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 10
+    MemorySize: 128
+    Architectures:
+      - x86_64
+
+Resources:
+  CalculatorHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: prod
+      CorsConfiguration:
+        AllowOrigins:
+          - "*"
+        AllowHeaders:
+          - Content-Type
+        AllowMethods:
+          - POST
+          - OPTIONS
+
+  AddFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: calculator-add
+      CodeUri: ../
+      Handler: services/add/handler.handler
+      Events:
+        AddApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref CalculatorHttpApi
+            Path: /add
+            Method: POST
+
+  SubtractFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: calculator-subtract
+      CodeUri: ../
+      Handler: services/subtract/handler.handler
+      Events:
+        SubtractApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref CalculatorHttpApi
+            Path: /subtract
+            Method: POST
+
+  MultiplyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: calculator-multiply
+      CodeUri: ../
+      Handler: services/multiply/handler.handler
+      Events:
+        MultiplyApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref CalculatorHttpApi
+            Path: /multiply
+            Method: POST
+
+  DivideFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: calculator-divide
+      CodeUri: ../
+      Handler: services/divide/handler.handler
+      Events:
+        DivideApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref CalculatorHttpApi
+            Path: /divide
+            Method: POST
+
+Outputs:
+  ApiEndpoint:
+    Description: HTTP API endpoint for calculator microservices
+    Value: !GetAtt CalculatorHttpApi.ApiEndpoint
+  AddPath:
+    Value: !Sub "${CalculatorHttpApi.ApiEndpoint}/add"
+  SubtractPath:
+    Value: !Sub "${CalculatorHttpApi.ApiEndpoint}/subtract"
+  MultiplyPath:
+    Value: !Sub "${CalculatorHttpApi.ApiEndpoint}/multiply"
+  DividePath:
+    Value: !Sub "${CalculatorHttpApi.ApiEndpoint}/divide"

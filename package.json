@@ -1,0 +1,17 @@
+{
+  "name": "calculator-microservices",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Calculator with one microservice per arithmetic operation",
+  "scripts": {
+    "start": "node scripts/start-all.js",
+    "start:gateway": "node gateway/server.js",
+    "start:add": "node services/add/server.js",
+    "start:subtract": "node services/subtract/server.js",
+    "start:multiply": "node services/multiply/server.js",
+    "start:divide": "node services/divide/server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
